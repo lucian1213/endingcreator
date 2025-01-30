@@ -31,37 +31,27 @@
     <div id="story">여기에 이야기가 표시됩니다...</div>
 
     <script>
-        async function generateStory() {
-            let name = document.getElementById("name").value;
-            let job = document.getElementById("job").value;
-            let activity = document.getElementById("activity").value;
-            let style = document.getElementById("style").value;
+async function generateStory() {
+    let name = document.getElementById("name").value;
+    let job = document.getElementById("job").value;
+    let activity = document.getElementById("activity").value;
 
-            if (!name || !job || !activity) {
-                alert("모든 정보를 입력해주세요!");
-                return;
-            }
+    let requestBody = {
+        prompt: `이름: ${name}, 직업: ${job}, 활동: ${activity}.\n이 정보를 바탕으로 짧은 이야기를 작성해줘.`,
+        max_tokens: 300
+    };
 
-            let prompt = `이름: ${name}, 직업: ${job}, 활동: ${activity}, 스타일: ${style}.\n이 정보를 바탕으로 짧은 이야기를 작성해줘.`;
+    let response = await fetch("https://my-worker.example.workers.dev", { // 🔴 Cloudflare Worker 주소!
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(requestBody)
+    });
 
-            let apiKey = "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";  // 🔴 여기에 OpenAI API 키를 입력하세요!
-            
-            let response = await fetch("https://api.openai.com/v1/completions", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${apiKey}`
-                },
-                body: JSON.stringify({
-                    model: "text-davinci-003",
-                    prompt: prompt,
-                    max_tokens: 300
-                })
-            });
-
-            let data = await response.json();
-            document.getElementById("story").innerText = data.choices[0].text.trim();
-        }
+    let data = await response.json();
+    document.getElementById("story").innerText = data.choices[0].text.trim();
+}
     </script>
 
 </body>
